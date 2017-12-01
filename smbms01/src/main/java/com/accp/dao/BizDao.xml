@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.accp.dao.BizDao">
+	<!-- 根据用户名获取用户信息 -->
+	<select id="validateUser2" parameterType="string" resultType="java.util.HashMap">
+		select * from smbms_user where usercode=#{principal}
+	</select>
+	<!-- 登录 -->
+	<select id="login" resultType="com.accp.pojo.User">
+		select * from smbms_user where usercode=#{userCode} and userpassword=#{userPassword}
+	</select>
+	<!-- 查询所有订单信息 -->
+	<select id="getAllBill" resultType="com.accp.pojo.Bill">
+		select b.*,p.proname from smbms_bill b,smbms_provider p where b.providerid=p.id 
+	</select>
+	<!-- 查询所有生产商 -->
+	<select id="getAllProvider" resultType="com.accp.pojo.Provider"> 
+		select * from smbms_provider
+	</select>
+	<!-- 订单支付状态 -->
+	<select id="getIsPayment" resultType="int">
+		select distinct ispayment from smbms_bill
+	</select>
+	<!-- 订单模糊查询 -->
+	<select id="getBill" resultType="com.accp.pojo.Bill">
+		select b.*,p.proname from smbms_bill b,smbms_provider p 
+		<where> b.providerid=p.id 
+		<if test="queryProductName != null">and b.productname like '%${queryProductName}%'</if>
+		<if test="queryProviderId != '请选择'">and p.proname=#{queryProviderId}</if>
+		<if test="queryIsPayment !=0">and b.ispayment=#{queryIsPayment}</if>
+		</where>
+	</select>
+	<!-- 添加订单 -->
+	<insert id="addBill" parameterType="java.util.HashMap">
+		insert into smbms_bill(id,billcode,productname,productunit,productcount,totalprice,providerid,ispayment) 
+		values(seq_smbms_bill_id.nextval,#{billCode},#{productName},#{productUnit},#{productCount},#{totalPrice},#{prividerId,jdbcType=NUMERIC},#{isPayment,jdbcType=NUMERIC})
+	</insert>
+</mapper>
